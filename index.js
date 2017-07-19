@@ -133,3 +133,79 @@ app.post('/upload', urlencodedParser, function (req, res){
 	})
 });
 
+app.get('/edit/:id', function (req, res){
+	var editId = req.params.id;
+	res.render('editItem', {data: editId});
+});
+
+app.post('/edit/:id', urlencodedParser, function (req, res){
+	var editId = req.params.id;
+	upload(req, res, function(err){
+		if(err) {
+			console.log(err);
+		} else {
+			// Validation
+			req.checkBody('id', 'id cannot be empty').notEmpty();
+			req.checkBody('id', 'id must be a number').isInt()
+			req.checkBody('title', 'title cannot be empty').notEmpty();
+			req.checkBody('description', 'description cannot be empty').notEmpty();
+
+			const errors = req.validationErrors();
+
+			if(errors) {
+				errors.forEach(function(error){
+					console.log(error);
+				})
+				res.render('editItemError', {
+					errors: errors
+				});
+			} else {
+				var imageData = req.file.path.slice(7);
+				Task.findOneAndUpdate({id: editId}, {
+					title: req.body.title,
+					description: req.body.description,
+					//var imagePath: req.file.path.slice(7);
+					image: {
+						data: imageData,
+						imagePath: req.file.path
+					}
+				}, {upsert:true} ,function (err, task){
+					if(err) {
+						console.log(err);
+					}
+					res.redirect('/');
+				});
+			}
+			
+		}
+	})
+});
+
+app.get('/remove/:id', function (req,res){
+	var removeId = req.params.id;
+	var removeTask;
+	Task.findOne({id: removeId}, function(err, task){
+		if(err){
+			console.log(err)
+		} else {
+			removeTask = task;
+			Task.remove({id: removeId}, function(err){
+				if(err){
+					console.log(err);
+				} else {
+					fs.unlink('./'+ removeTask.image.imagePath, function(err){
+						if (err) {
+							console.log(err);
+						} else{
+							res.redirect('/');
+						}
+					});
+				
+				}
+			});
+		}
+	});
+});
+
+
+

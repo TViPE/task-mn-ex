@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Admin-AddiTem</title>
+		<title>Edit</title>
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 		<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
@@ -10,11 +10,18 @@
 	</head>
 	<body>
 		<div class="container">
-			<h3>Add Task</h3>
-			<form action="/upload" method="POST" enctype="multipart/form-data">
+			<h3>Edit Task</h3>
+			<% if(errors){ %>
+				<% errors.forEach(function(error){ %>
+					<div class="alert alert-danger" role="alert">
+  						<strong><%= error.msg %></strong>
+					</div>
+				<% }) %>
+			<% } %>
+			<form action="/edit/<%= data %>" method="POST" enctype="multipart/form-data">
 				<div class="form-group">
 					<label for="ID">ID</label>
-					<input type="text" class="form-control" name="id" placeholder="ID">
+					<input type="text" class="form-control" name="id" placeholder="ID" value="<%= data %>">
 				</div>
 				<div class="form-group">
 					<label for="title">Title</label>
