@@ -10,7 +10,7 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(expressValidator);
+app.use(expressValidator());
 
 // Multer
 var storage =  multer.diskStorage({
@@ -66,7 +66,7 @@ app.get('/', function (req, res){
 			if(err){
 				console.log(err);
 				var errorMessage = "Error - Unable to fetch data from database"
-				res.render('mainpage', {error: errorMessage})
+				res.send(errorMessage);
 			} else {
 				res.render('mainpage', {data: data});
 			}
@@ -74,5 +74,9 @@ app.get('/', function (req, res){
 	} catch(e){
 		res.send(e);
 	}
+});
+
+app.get('/admin', function (req,res){
+	res.render('addItem');
 });
 
