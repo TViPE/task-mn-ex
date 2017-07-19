@@ -12,9 +12,13 @@
 		<div class="container">
 			<h3>Add Task</h3>
 
-			
-				
-		
+			<% if(errors){ %>
+				<% errors.forEach(function(error){ %>
+					<div class="alert alert-danger" role="alert">
+  						<strong><%= error.msg %></strong>
+					</div>
+				<% }) %>
+			<% } %>
 			<form action="/upload" method="POST" enctype="multipart/form-data">
 				<div class="form-group">
 					<label for="ID">ID</label>

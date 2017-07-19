@@ -9,13 +9,14 @@ var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './views');
 app.use(express.static('public'));
-app.use(bodyParser.urlencoded({extended: false}));
+var urlencodedParser = bodyParser.urlencoded({extend: false});
+app.use(urlencodedParser);
 app.use(expressValidator());
 
 // Multer
 var storage =  multer.diskStorage({
 	destination: function(req, file, cb){
-		cb(null, 'public/img/uload');
+		cb(null, 'public/img/upload');
 	},
 	filename: function(req, file, cb){
 		cb(null, Date.now() + file.originalname);
@@ -37,6 +38,7 @@ var taskSchema = mongoose.Schema({
 	description: String,
 	image: {
 		data: Buffer,
+		imagePath: String,
 		contentType: String
 	},
 	created_at: Date,
@@ -78,5 +80,56 @@ app.get('/', function (req, res){
 
 app.get('/admin', function (req,res){
 	res.render('addItem');
+});
+
+app.post('/upload', urlencodedParser, function (req, res){
+	upload(req, res, function(err){
+		if(err) {
+			console.log(err);
+		} else {
+			// Validation
+			req.checkBody('id', 'id cannot be empty').notEmpty();
+			req.checkBody('id', 'id must be a number').isInt()
+			req.checkBody('title', 'title cannot be empty').notEmpty();
+			req.checkBody('description', 'description cannot be empty').notEmpty();
+
+			const errors = req.validationErrors();
+
+			if(errors) {
+				errors.forEach(function(error){
+					console.log(error);
+				})
+				res.render('addItemError', {
+					errors: errors
+				});
+			} else {
+				var id = req.body.id;
+				var title = req.body.title;
+				var description = req.body.description;
+
+				var imagePath = req.file.path.slice(7);
+				var newTask = new Task({
+					id: id,
+					title: title,
+					description: description,
+					image: {
+						data: imagePath,
+						imagePath: req.file.path,
+						contentType: 'image/jpeg'
+					},
+					created_at: Date.now()
+				});
+				//console.log(req.body);
+				newTask.save(function(err){
+					if(err) {
+						console.log(err);
+					} else {
+						res.redirect('/');
+					}
+				});
+			}
+			
+		}
+	})
 });
 

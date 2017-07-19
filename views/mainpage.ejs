@@ -26,12 +26,12 @@
 				<tbody>
 					<% data.forEach(function (e,i){ %>
 					<tr>
-						<td>e.id</td>
-						<td>e.title</td>
-						<td>e.description</td>
-						<td><img src="" alt="" style="width:150px"></td>
-						<td>e.created_at</td>
-						<td>e.updated_at</td>
+						<td><%= e.id %></td>
+						<td><%= e.title %></td>
+						<td><%= e.description %></td>
+						<td><img src="./<%= e.image.data %>" alt="" style="width:150px"></td>
+						<td><%= e.created_at %></td>
+						<td><%= e.updated_at %></td>
 						<td>
 							<a href="/edit/<%= e.id %>">EDIT</a> /
 							<a href="/remove/<%= e.id %>">REMOVE</a>
